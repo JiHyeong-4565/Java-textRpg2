@@ -22,66 +22,79 @@ public class AttackManager {
 
 			Map<Integer, String> skillNames = new LinkedHashMap<>();
 			Map<Integer, Integer> skillDamage = new LinkedHashMap<>();
+			Map<Integer, Integer> skillMpCost = new LinkedHashMap<>();
 			int menuIndex = 1;
 
 			switch (hero.getJob()) {
 			case "Warrior":
 				if (level >= 1) {
 					skillNames.put(menuIndex, "강한 일격");
-					skillDamage.put(menuIndex++, basePower - monster.getDefense());
+					skillDamage.put(menuIndex, basePower - monster.getDefense());
+					skillMpCost.put(menuIndex++, 0);
 				}
 				if (level >= 3) {
 					skillNames.put(menuIndex, "삼단 베기");
-					skillDamage.put(menuIndex++, (int) (basePower * 1.5) - monster.getDefense());
+					skillDamage.put(menuIndex, (int) (basePower * 1.5) - monster.getDefense());
+					skillMpCost.put(menuIndex++, 10);
 				}
 				if (level >= 5) {
 					skillNames.put(menuIndex, "분노의 찌르기");
-					skillDamage.put(menuIndex++, (int) (basePower * 2.0) - monster.getDefense());
+					skillDamage.put(menuIndex, (int) (basePower * 2.0) - monster.getDefense());
+					skillMpCost.put(menuIndex++, 30);
 				}
 				break;
 
 			case "Mage":
 				if (level >= 1) {
 					skillNames.put(menuIndex, "매직 미사일");
-					skillDamage.put(menuIndex++, basePower + 5 - monster.getDefense());
+					skillDamage.put(menuIndex, basePower + 5 - monster.getDefense());
+					skillMpCost.put(menuIndex++, 0);
 				}
 				if (level >= 3) {
 					skillNames.put(menuIndex, "파이어볼");
-					skillDamage.put(menuIndex++, basePower + 15 - monster.getDefense());
+					skillDamage.put(menuIndex, basePower + 15 - monster.getDefense());
+					skillMpCost.put(menuIndex++, 10);
 				}
 				if (level >= 5) {
 					skillNames.put(menuIndex, "메테오 스트라이크");
-					skillDamage.put(menuIndex++, basePower + 30 - monster.getDefense());
+					skillDamage.put(menuIndex, basePower + 30 - monster.getDefense());
+					skillMpCost.put(menuIndex++, 30);
 				}
 				break;
 
 			case "Archer":
 				if (level >= 1) {
 					skillNames.put(menuIndex, "급소 사격");
-					skillDamage.put(menuIndex++, basePower - monster.getDefense());
+					skillDamage.put(menuIndex, basePower - monster.getDefense());
+					skillMpCost.put(menuIndex++, 0);
 				}
 				if (level >= 3) {
 					skillNames.put(menuIndex, "연속 사격");
-					skillDamage.put(menuIndex++, (int) (basePower * 1.4) - monster.getDefense());
+					skillDamage.put(menuIndex, (int) (basePower * 1.4) - monster.getDefense());
+					skillMpCost.put(menuIndex++, 10);
 				}
 				if (level >= 5) {
 					skillNames.put(menuIndex, "관통 화살");
-					skillDamage.put(menuIndex++, (int) (basePower * 1.8) - monster.getDefense());
+					skillDamage.put(menuIndex, (int) (basePower * 1.8) - monster.getDefense());
+					skillMpCost.put(menuIndex++, 30);
 				}
 				break;
 
 			case "Rogue":
 				if (level >= 1) {
 					skillNames.put(menuIndex, "날렵한 베기");
-					skillDamage.put(menuIndex++, basePower - monster.getDefense());
+					skillDamage.put(menuIndex, basePower - monster.getDefense());
+					skillMpCost.put(menuIndex++, 0);
 				}
 				if (level >= 3) {
 					skillNames.put(menuIndex, "그림자 일격");
-					skillDamage.put(menuIndex++, (int) (basePower * 1.6) - monster.getDefense());
+					skillDamage.put(menuIndex, (int) (basePower * 1.6) - monster.getDefense());
+					skillMpCost.put(menuIndex++, 10);
 				}
 				if (level >= 5) {
 					skillNames.put(menuIndex, "연속 찌르기");
-					skillDamage.put(menuIndex++, (int) (basePower * 2.1) - monster.getDefense());
+					skillDamage.put(menuIndex, (int) (basePower * 2.1) - monster.getDefense());
+					skillMpCost.put(menuIndex++, 30);
 				}
 				break;
 			}
@@ -97,29 +110,41 @@ public class AttackManager {
 				System.out.println("잘못된 선택입니다. 기본 공격으로 진행합니다.");
 				damage = basePower - monster.getDefense();
 			} else {
-				damage = skillDamage.get(choice);
+				int cost = skillMpCost.get(choice);
+				if (hero.getMp() < cost) {
+					System.out.println("❌ MP가 부족하여 스킬을 사용할 수 없습니다. 기본 공격으로 전환합니다.");
+					damage = basePower - monster.getDefense();
+				} else {
+					hero.setMp(hero.getMp() - cost);
+					damage = skillDamage.get(choice);
+					System.out.println("🔋 MP " + cost + " 소모. 현재 MP: " + hero.getMp());
 
-				String skillName = skillNames.get(choice);
-				String monsterName = monster.getName();
+					String skillName = skillNames.get(choice);
+					String monsterName = monster.getName();
 
-				if (monster instanceof Dragon && hero.getJob().equals("Mage")) {
-					System.out.println("드래곤은 마법에 약하다! 피해 1.5배!");
-					damage *= 1.5;
-				}
+					if (monster instanceof Dragon && hero.getJob().equals("Mage")) {
+						System.out.println("드래곤은 마법에 약하다! 피해 1.5배!");
+						damage *= 1.5;
+					}
 
-				if (monsterName.equals("라쿤") && skillName.equals("급소 사격")) {
-					System.out.println("🎯 라쿤은 급소 사격에 약하다! 피해 1.5배!");
-					damage *= 1.5;
-				}
+					if (hero.getJob().equals("Mage")) {
+						damage *= 1.3;
+					}
 
-				if (monsterName.equals("들고양이") && skillName.equals("날렵한 베기")) {
-					System.out.println("🐈 들고양이는 날렵한 베기에 약하다! 피해 1.5배!");
-					damage *= 1.5;
-				}
+					if (monsterName.equals("라쿤") && skillName.equals("급소 사격")) {
+						System.out.println("🎯 라쿤은 급소 사격에 약하다! 피해 1.5배!");
+						damage *= 1.5;
+					}
 
-				if (monsterName.equals("오크") && skillName.equals("삼단 베기")) {
-					System.out.println("🪓 오크는 삼단 베기에 약하다! 피해 1.5배!");
-					damage *= 1.5;
+					if (monsterName.equals("들고양이") && skillName.equals("날렵한 베기")) {
+						System.out.println("🐈 들고양이는 날렵한 베기에 약하다! 피해 1.5배!");
+						damage *= 1.5;
+					}
+
+					if (monsterName.equals("오크") && skillName.equals("삼단 베기")) {
+						System.out.println("🪓 오크는 삼단 베기에 약하다! 피해 1.5배!");
+						damage *= 1.5;
+					}
 				}
 			}
 
@@ -142,17 +167,17 @@ public class AttackManager {
 				System.out.println("[" + monster.getName() + "]에게 " + damage + "의 피해를 입혔습니다.");
 			}
 
-			// 몬스터 처치 확인
 			if (monster.getHp() <= 0) {
 				System.out.println("\n=============================");
 				System.out.println("🎉 " + monster.getName() + "을(를) 처치했습니다!");
 				System.out.println("📈 경험치 +" + monster.getExperience() + " 획득!");
-				System.out.println("=============================\n");
+				hero.addMoney(monster.getMoney());
 				hero.addExp(monster.getExperience());
+				hero.recordMonsterKill(monster.getName());
+				System.out.println("=============================\n");
 				break;
 			}
 
-			// 몬스터 반격
 			if (hero.getJob().equals("Rogue")) {
 				double evadeChance = Math.random();
 				if (evadeChance < 0.3) {

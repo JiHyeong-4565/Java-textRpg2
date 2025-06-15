@@ -16,7 +16,7 @@ public class MonsterSelector {
 
 		System.out.println("\n=== 몬스터를 선택하세요 ===");
 		System.out.println("1. 라쿤 (Lv.1)");
-		System.out.println("2. 들고양이 (Lv.5)");
+		System.out.println("2. 솰쾡이 (Lv.5)");
 		System.out.println("3. 오크 (Lv.10)");
 		System.out.println("4. 드래곤 (Lv.20)");
 		System.out.print("번호 입력: ");

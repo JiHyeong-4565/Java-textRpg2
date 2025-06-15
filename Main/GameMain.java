@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import Battle.MonsterSelector;
 import Character.Hero;
+import Mission.Mission;
 import Store.PotionStore;
 import Store.WeaponStore;
 
@@ -62,6 +63,21 @@ public class GameMain {
 					hero.getInventory().useItem(itemChoice, hero);
 				}
 			}
+			case 6 -> {
+				Mission mission = hero.getCurrentMission();
+				if (mission == null) {
+					System.out.println("📭 현재 진행 중인 미션이 없습니다.");
+				} else {
+					mission.showMission();
+					System.out.print("👉 미션을 완료하시겠습니까? (y/n): ");
+					String confirm = sc.next().toLowerCase();
+					if (confirm.equals("y")) {
+						mission.complete(hero); // 보상 적용 포함
+						hero.setCurrentMission(null); // 완료 후 비우기
+					}
+				}
+			}
+
 			case 0 -> {
 				System.out.println("게임을 종료합니다. 감사합니다!");
 				return;
