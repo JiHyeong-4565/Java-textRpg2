@@ -136,8 +136,8 @@ public class AttackManager {
 						damage *= 1.5;
 					}
 
-					if (monsterName.equals("들고양이") && skillName.equals("날렵한 베기")) {
-						System.out.println("🐈 들고양이는 날렵한 베기에 약하다! 피해 1.5배!");
+					if (monsterName.equals("솰쾡이") && skillName.equals("날렵한 베기")) {
+						System.out.println("🐈 솰쾡이는 날렵한 베기에 약하다! 피해 1.5배!");
 						damage *= 1.5;
 					}
 
